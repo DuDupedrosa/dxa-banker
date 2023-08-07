@@ -1,0 +1,49 @@
+# Node.js with React
+# Build a Node.js project that uses React.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- master
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '16.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    npm install
+    npm run-script build
+  displayName: 'npm install and build'
+
+- task: FtpUpload@2
+  inputs:
+    credentialsOption: 'inputs'
+    serverUrl: 'ftps://waws-prod-cq1-017.ftp.azurewebsites.windows.net/site/wwwroot'
+    username: 'banker\$banker'
+    password: 'SBf3qKMr3MegSHLYfEF6AvHPnxQCeLKvNAl04kqmasKzZyctbgfcSkWXHn65'
+    rootDirectory: '.next/server/app'
+    filePatterns: '**'
+    remoteDirectory: '/site/wwwroot'
+    clean: false
+    cleanContents: false
+    preservePaths: true
+    trustSSL: false
+
+- task: FtpUpload@2
+  inputs:
+    credentialsOption: 'inputs'
+    serverUrl: 'ftps://waws-prod-cq1-017.ftp.azurewebsites.windows.net/site/wwwroot'
+    username: 'banker\$banker'
+    password: 'SBf3qKMr3MegSHLYfEF6AvHPnxQCeLKvNAl04kqmasKzZyctbgfcSkWXHn65'
+    rootDirectory: '.next/static'
+    filePatterns: '**'
+    remoteDirectory: '/site/wwwroot/_next/static'
+    clean: false
+    cleanContents: false
+    preservePaths: true
+    trustSSL: false
